@@ -26,7 +26,7 @@ class Graph:
 
         # Call the recursive helper function
         # to print DFS traversal
-        self.DFSUtil(v, visited)
+        self.dfs_util(v, visited)
 
 
 if __name__ == "__main__":
