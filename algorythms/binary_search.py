@@ -47,6 +47,17 @@ class BinarySearch:
         # return False if target not found before
         return False
 
+    def remove_duplicates(self):
+        if not self.arr:
+            return 0
+
+        write = 1  # Wskaźnik na miejsce do zapisania nowej unikalnej liczby
+        for read in range(1, len(self.arr)):
+            if self.arr[read] != self.arr[read - 1]:
+                self.arr[write] = self.arr[read]
+                write += 1
+        return write
+
 
 # Przykład użycia
 bs_obj = BinarySearch(20)
@@ -58,3 +69,6 @@ print(f"Target {target} found at index (After sorting): ", result)
 # Przykład urzycia Two pointers
 result = bs_obj.is_pair(target)
 print(result)
+
+k = bs_obj.remove_duplicates()
+print(bs_obj.arr[:k])
