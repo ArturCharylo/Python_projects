@@ -29,7 +29,7 @@ class BitwiseOps:
         return f"{x} (bin: {bin(x)})"
 
     # Custom examples of use
-    def custom_example(self) -> int:
+    def is_power_of_2(self) -> int:
         return self.a > 0 and (self.a & (self.a - 1)) == 0
 
 
@@ -49,7 +49,7 @@ def main():
     print(f"a >> 2  = {ops.to_binary(ops.shift_right(2))}")
 
     print("\nExample of another use case:")
-    print(f"Is number {a} a power of 2? -> {ops.custom_example()}")
+    print(f"Is number {a} a power of 2? -> {ops.is_power_of_2()}")
 
 
 if __name__ == "__main__":
