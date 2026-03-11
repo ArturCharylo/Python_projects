@@ -1,42 +1,55 @@
 class BitwiseOps:
+    """A class to demonstrate various bitwise operations."""
+
     def __init__(self, a: int, b: int = 0):
         self.a = a
         self.b = b
 
-    # Basic operations
     def bit_and(self) -> int:
+        """Returns the result of bitwise AND."""
         return self.a & self.b
 
     def bit_or(self) -> int:
+        """Returns the result of bitwise OR."""
         return self.a | self.b
 
     def bit_xor(self) -> int:
+        """Returns the result of bitwise XOR."""
         return self.a ^ self.b
 
     def bit_not(self) -> int:
+        """Returns the result of bitwise NOT on the first number."""
         return ~self.a
 
-    # Bit shift
     def shift_left(self, n: int) -> int:
+        """Shifts the bits of 'a' to the left by n positions."""
         return self.a << n
 
     def shift_right(self, n: int) -> int:
+        """Shifts the bits of 'a' to the right by n positions."""
         return self.a >> n
 
-    # Helper: binary representation
     @staticmethod
     def to_binary(x: int) -> str:
+        """Returns a string representation of an integer in decimal and binary."""
         return f"{x} (bin: {bin(x)})"
 
-    # Custom examples of use
-    def is_power_of_2(self) -> int:
+    def is_power_of_2(self) -> bool:
+        """Checks if 'a' is a power of 2. Returns a boolean value."""
+        # Return type hint to bool as it returns True/False
         return self.a > 0 and (self.a & (self.a - 1)) == 0
 
 
 def main():
     print("🔹 BitwiseOps Demo 🔹")
-    a = int(input("Please provide the first number (a): "))
-    b = int(input("Please provide the second number (b): "))
+    
+    # Error handling for user input
+    try:
+        a = int(input("Please provide the first number (a): "))
+        b = int(input("Please provide the second number (b): "))
+    except ValueError:
+        print("Invalid input! Please provide integer numbers.")
+        return
 
     ops = BitwiseOps(a, b)
 
@@ -49,6 +62,7 @@ def main():
     print(f"a >> 2  = {ops.to_binary(ops.shift_right(2))}")
 
     print("\nExample of another use case:")
+    # is_power_of_2 returns a boolean, which is clear in the output
     print(f"Is number {a} a power of 2? -> {ops.is_power_of_2()}")
 
 
