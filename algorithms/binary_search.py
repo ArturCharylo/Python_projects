@@ -66,7 +66,7 @@ target = 42
 result = bs_obj.bs(target)
 print(f"Target {target} found at index (After sorting): ", result)
 
-# Przykład urzycia Two pointers
+# Przykład użycia Two pointers
 result = bs_obj.is_pair(target)
 print(result)
 
