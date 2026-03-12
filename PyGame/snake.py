@@ -2,131 +2,162 @@ import pygame
 import random
 import time
 
-# Initialize Pygame
-pygame.init()
-
-# Set up the game window
-width, height = 800, 600
-window = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Snake Game")
-
-# Define colors
+# Defined colors as constants for better maintainability
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-# Set up the game clock
-clock = pygame.time.Clock()
-
-# Set up the initial position and direction of the snake
-snake_position = [100, 50]
-snake_body = [[100, 50], [90, 50], [80, 50]]
-direction = "RIGHT"
-
-# Set up the initial position of the food
-food_position = [random.randrange(
-    1, (width // 10)) * 10, random.randrange(1, (height // 10)) * 10]
-food_spawned = True
-
-# Set up the initial score
-score = 0
-font_style = pygame.font.SysFont(None, 40)
-
-# Set up the initial game speed and speed increment
-game_speed = 15
-speed_increment = 2
-
-# Function to display the score
-
-
-def display_score():
-    score_text = font_style.render("Score: " + str(score), True, GREEN)
-    window.blit(score_text, [10, 10])
-
-# Function to display the snake
-
-
-def display_snake():
-    for position in snake_body:
-        pygame.draw.rect(window, GREEN, pygame.Rect(
-            position[0], position[1], 10, 10))
-
-# Function to display a message popup
+class Snake:
+    """Handles snake movement, body growth, and direction logic."""
+    def __init__(self):
+        self.position = [100, 50]
+        self.body = [[100, 50], [90, 50], [80, 50]]
+        self.direction = "RIGHT"
+    
+    def change_direction(self, new_direction):       
+        # Preventing the snake from moving directly backward
+        if new_direction == "UP" and self.direction != "DOWN":
+            self.direction = "UP"
+        elif new_direction == "DOWN" and self.direction != "UP":
+            self.direction = "DOWN"
+        elif new_direction == "LEFT" and self.direction != "RIGHT":
+            self.direction = "LEFT"
+        elif new_direction == "RIGHT" and self.direction != "LEFT":
+            self.direction = "RIGHT"
+    
+    def move(self, grow=False):
+        """Moves the snake and handles body updates."""
+        if self.direction == "UP":
+            self.position[1] -= 10
+        elif self.direction == "DOWN":
+            self.position[1] += 10
+        elif self.direction == "LEFT":
+            self.position[0] -= 10
+        elif self.direction == "RIGHT":
+            self.position[0] += 10
+        
+        # Add new head position
+        self.body.insert(0, list(self.position))
+        
+        # If snake didn't eat food, remove the last tail segment
+        if not grow:
+            self.body.pop()
 
 
-def display_message(message):
-    message_text = font_style.render(message, True, GREEN)
-    window.blit(message_text, [width // 2 - message_text.get_width() //
-                2, height // 2 - message_text.get_height() // 2])
-    pygame.display.update()
-    time.sleep(2)
+class Food: 
+    """Handles food spawning logic."""
+    def __init__(self, width, height):
+        self.position = [0, 0]
+        self.spawn_food(width, height)
 
+    def spawn_food(self, width, height):
+        """Spawns food at a random position aligned with the 10px grid."""
+        self.position = [
+            random.randrange(1, (width // 10)) * 10, 
+            random.randrange(1, (height // 10)) * 10
+        ]
+    
+class Game:
+    """Main game engine handling rendering, collisions, and the game loop."""
+    def __init__(self, width, height):
+        pygame.init()
+        self.width = width
+        self.height = height
+        self.window = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption("Snake Game - Object Oriented")
+        
+        self.clock = pygame.time.Clock()
+        self.font_style = pygame.font.SysFont(None, 40)
+        
+        self.snake = Snake()
+        self.food = Food(width, height)
+        self.score = 0
+        self.game_speed = 15
+        self.speed_increment = 2
+    
+    def check_collisions(self):
+        """Checks for wall and self-collision."""
+        # Wall collision
+        if (self.snake.position[0] < 0 or self.snake.position[0] >= self.width or 
+            self.snake.position[1] < 0 or self.snake.position[1] >= self.height):
+            return "wall"
 
-# Main game loop
-game_over = False
-while not game_over:
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game_over = True
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w and direction != "DOWN":
-                direction = "UP"
-            elif event.key == pygame.K_s and direction != "UP":
-                direction = "DOWN"
-            elif event.key == pygame.K_a and direction != "RIGHT":
-                direction = "LEFT"
-            elif event.key == pygame.K_d and direction != "LEFT":
-                direction = "RIGHT"
+        # Self-collision
+        if self.snake.position in self.snake.body[1:]:
+            return "self"
 
-    # Move the snake
-    if direction == "UP":
-        snake_position[1] -= 10
-    elif direction == "DOWN":
-        snake_position[1] += 10
-    elif direction == "LEFT":
-        snake_position[0] -= 10
-    elif direction == "RIGHT":
-        snake_position[0] += 10
+        return None
 
-    # Check for collision with the wall
-    if snake_position[0] < 0 or snake_position[0] >= width or snake_position[1] < 0 or snake_position[1] >= height:
-        display_message("Game Over! You hit the wall")
-        game_over = True
+    def check_food_collision(self):
+        """Checks if snake head reached the food."""
+        if self.snake.position == self.food.position:
+            self.score += 1
+            # Increase speed every 2 points
+            if self.score % 2 == 0:
+                self.game_speed += self.speed_increment
+            return True
+        return False
+    
+    def display_score(self):
+        score_text = self.font_style.render(f"Score: {self.score}", True, GREEN)
+        self.window.blit(score_text, [10, 10])
+    
+    def display_message(self, message):
+        message_text = self.font_style.render(message, True, GREEN)
+        self.window.blit(
+            message_text, 
+            [self.width // 2 - message_text.get_width() // 2, 
+             self.height // 2 - message_text.get_height() // 2]
+        )
+        pygame.display.update()
+        time.sleep(2)
 
-    # Check for collision with the food
-    if snake_position == food_position:
-        score += 1
-        food_spawned = False
+    def run(self):
+        """Starts the main game loop."""
+        game_over = False
+        while not game_over:
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_over = True
+                if event.type == pygame.KEYDOWN:
+                    # Mapping Pygame constants to direction strings
+                    if event.key == pygame.K_w: self.snake.change_direction("UP")
+                    elif event.key == pygame.K_s: self.snake.change_direction("DOWN")
+                    elif event.key == pygame.K_a: self.snake.change_direction("LEFT")
+                    elif event.key == pygame.K_d: self.snake.change_direction("RIGHT")
 
-        # Increase game speed after every 2 red points
-        if score % 2 == 0:
-            game_speed += speed_increment
+            # Check if snake eats food BEFORE moving or while moving
+            ate_food = self.check_food_collision()
+            if ate_food:
+                self.food.spawn_food(self.width, self.height)
 
-    # Update the snake body
-    snake_body.insert(0, list(snake_position))
-    if not food_spawned:
-        food_position = [random.randrange(
-            1, (width // 10)) * 10, random.randrange(1, (height // 10)) * 10]
-        food_spawned = True
-    else:
-        snake_body.pop()
+            # Move snake (pass grow=True if it ate food)
+            self.snake.move(grow=ate_food)
 
-    # Check for collision with the snake itself
-    if snake_position in snake_body[1:]:
-        display_message("Game Over! You hit yourself")
-        game_over = True
+            # Check for death
+            collision = self.check_collisions()
+            if collision:
+                msg = "hit the wall" if collision == "wall" else "hit yourself"
+                self.display_message(f"Game Over! You {msg}")
+                game_over = True
 
-    # Refresh the game window
-    window.fill(BLACK)
-    display_snake()
-    pygame.draw.rect(window, RED, pygame.Rect(
-        food_position[0], food_position[1], 10, 10))
-    display_score()
-    pygame.display.update()
+            # Rendering
+            self.window.fill(BLACK)
+            
+            # Draw Snake
+            for pos in self.snake.body:
+                pygame.draw.rect(self.window, GREEN, pygame.Rect(pos[0], pos[1], 10, 10))
+            
+            # Draw Food
+            pygame.draw.rect(self.window, RED, pygame.Rect(self.food.position[0], self.food.position[1], 10, 10))
+            
+            self.display_score()
+            pygame.display.update()
+            self.clock.tick(self.game_speed)
 
-    # Set the game speed
-    clock.tick(game_speed)
+        pygame.quit()
 
-# Quit Pygame
-pygame.quit()
+if __name__ == "__main__":
+    game = Game(800, 600)
+    game.run()
