@@ -1,5 +1,4 @@
 import sys
-import os
 from ui.utils import clear_console, pause, Colors
 from ui.header import display_header
 
@@ -33,10 +32,9 @@ def main_menu():
             print(f"{Colors.MENU}Goodbye!")
             break
 
-        print("\n" + "="*30)
-
         match choice:
             case '1':
+                clear_console()
                 # Full DFS/BFS demonstration with user input
                 print(f"{Colors.INFO}[DFS/BFS Demo]")
                 g = Graph()
@@ -55,6 +53,7 @@ def main_menu():
                     print(f"{Colors.ERROR}Invalid input. Please enter a number.")
 
             case '2':
+                clear_console()
                 # Interactive Hash Map demonstration
                 print(f"{Colors.INFO}[Hash Map Demo]")
                 size = int(input("Enter hash table size: "))
@@ -69,6 +68,7 @@ def main_menu():
                 print(f"{Colors.SUCCESS}Result: {h.get_val(search_key)}")
 
             case '3':
+                clear_console()
                 # Binary Search and Two Pointers functionality
                 print(f"{Colors.INFO}[Binary Search Demo]")
                 length = int(input("Enter array length to generate: "))
@@ -83,6 +83,7 @@ def main_menu():
                 print(f"{Colors.SUCCESS}Does a pair exist?: {bs.is_pair(pair_sum)}")
 
             case '4':
+                clear_console()
                 # Complete Bitwise Operations demonstration
                 print(f"{Colors.INFO}[Bitwise Ops Demo]")
                 try:
@@ -99,6 +100,7 @@ def main_menu():
                     print(f"{Colors.ERROR}Please provide valid integers.")
 
             case '5':
+                clear_console()
                 # Launching the PyGame Snake instance
                 print(f"{Colors.INFO}Launching Snake Game...")
                 snake_game = Game(800, 600)
