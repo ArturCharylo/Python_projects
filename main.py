@@ -4,11 +4,15 @@ try:
     from algorithms.hash_map import HashMap
     from algorithms.binary_search import BinarySearch
     from algorithms.bit_operations import BitwiseOps
+    from ui.header import display_header
 except ImportError as e:
     print(f"Error: Could not find one of the algorithm modules. {e}")
 
 def main_menu():
     """Main menu to navigate through various Python projects."""
+
+    display_header()
+
     while True:
         print("\n--- Python Projects Menu ---")
         print("1. Graph Traversal (DFS/BFS)")
